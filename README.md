@@ -1,3 +1,7 @@
+# Github Link
+
+https://github.com/Mohith-T-Reddy/blockhouse-trial-test.git
+
 # Smart Order Routing Backtest
 
 This project simulates a Smart Order Router based on the static cost model from Cont & Kukanov. It splits a 5,000-share buy order across multiple venues using snapshot market data, and tries to find the cheapest way to execute the full order.
