@@ -30,22 +30,6 @@ At the end, the script prints one JSON object with:
 
 A plot of cumulative cost over time is saved as `results.png`.
 
-## Logic flow
-
-```mermaid
-graph TD
-    A[Start] --> B[Read market snapshot CSV]
-    B --> C[Preprocess: group by timestamp and venue, <br> keeping only the first quote per publisher_id]
-    C --> D[Set up a grid of parameter values: <br> - overfill_penalty <br> - underfill_penalty <br> - queue_penalty]
-    D --> E[For each combination of parameters:]
-    E --> F[Run smart router: <br> - At each timestamp: <br>    - Allocate shares using static cost model <br>    - Fill as much as possible from each venue <br>    - Carry unfilled shares to next step <br> - Track total cost and fills]
-    F --> G[Store best result seen so far <br> (lowest cost, highest fill)]
-    G --> H[After search, take best parameter set found]
-    H --> I[Run baseline strategies for comparison: <br> - Best Ask: take from cheapest available venue <br> - TWAP: spread evenly over 9 minutes <br> - VWAP: fill only when ask is below average price]
-    I --> J[Compare router vs. baselines: <br> - Cash spent <br> - Fill price <br> - Savings in basis points]
-    J --> K[Generate output: <br> - Print JSON summary <br> - Save cumulative cost chart as PNG]
-    K --> L[Done]
-
 ## Improvement idea
 
 Right now, the model assumes any order at the front of the book always gets filled. In reality, orders might miss fills due to queueing effects. A more realistic model would simulate the chance of not getting filled even when prices match, depending on how deep you are in the queue.
@@ -56,3 +40,19 @@ Right now, the model assumes any order at the front of the book always gets fill
 - numpy
 - pandas
 - matplotlib
+
+## Logic flow
+
+```mermaid
+graph TD
+    A[Start] --> B[Read market snapshot CSV]
+    B --> C[Preprocess: group by timestamp and venue, <br> keeping only the first quote per publisher_id]
+    C --> D[Set up a grid of parameter values: <br> - overfill_penalty <br> - underfill_penalty <br> - queue_penalty]
+    D --> E[For each combination of parameters:]
+    E --> F[Run smart router: <br> - At each timestamp: <br>   - Allocate shares using static cost model <br>   - Fill as much as possible from each venue <br>   - Carry unfilled shares to next step <br> - Track total cost and fills]
+    F --> G["Store best result seen so far <br> (lowest cost, highest fill)"]
+    G --> H[After search, take best parameter set found]
+    H --> I[Run baseline strategies for comparison: <br> - Best Ask: take from cheapest venue <br> - TWAP: spread evenly over 9 mins <br> - VWAP: fill when ask ≤ avg price]
+    I --> J[Compare router vs. baselines: <br> - Cash spent <br> - Fill price <br> - Savings in basis points]
+    J --> K[Generate output: <br> - Print JSON summary <br> - Save cumulative cost chart as PNG]
+    K --> L[Done]
