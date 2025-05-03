@@ -32,59 +32,19 @@ A plot of cumulative cost over time is saved as `results.png`.
 
 ## Logic flow
 
-Start
-  |
-  v
-Read market snapshot CSV
-  |
-  v
-Preprocess: group by timestamp and venue,
-keeping only the first quote per publisher_id
-  |
-  v
-Set up a grid of parameter values:
-  - overfill_penalty
-  - underfill_penalty
-  - queue_penalty
-  |
-  v
-For each combination of parameters:
-    |
-    v
-  Run smart router:
-    - At each timestamp:
-        • Allocate shares using static cost model
-        • Fill as much as possible from each venue
-        • Carry unfilled shares to next step
-    - Track total cost and fills
-    |
-    v
-  Store best result seen so far
-  (lowest cost, highest fill)
-  |
-  v
-After search, take best parameter set found
-  |
-  v
-Run baseline strategies for comparison:
-  - Best Ask: take from cheapest available venue
-  - TWAP: spread evenly over 9 minutes
-  - VWAP: fill only when ask is below average price
-  |
-  v
-Compare router vs. baselines:
-  - Cash spent
-  - Fill price
-  - Savings in basis points
-  |
-  v
-Generate output:
-  - Print JSON summary
-  - Save cumulative cost chart as PNG
-  |
-  v
-Done
-
+```mermaid
+graph TD
+    A[Start] --> B[Read market snapshot CSV]
+    B --> C[Preprocess: group by timestamp and venue, <br> keeping only the first quote per publisher_id]
+    C --> D[Set up a grid of parameter values: <br> - overfill_penalty <br> - underfill_penalty <br> - queue_penalty]
+    D --> E[For each combination of parameters:]
+    E --> F[Run smart router: <br> - At each timestamp: <br>    - Allocate shares using static cost model <br>    - Fill as much as possible from each venue <br>    - Carry unfilled shares to next step <br> - Track total cost and fills]
+    F --> G[Store best result seen so far <br> (lowest cost, highest fill)]
+    G --> H[After search, take best parameter set found]
+    H --> I[Run baseline strategies for comparison: <br> - Best Ask: take from cheapest available venue <br> - TWAP: spread evenly over 9 minutes <br> - VWAP: fill only when ask is below average price]
+    I --> J[Compare router vs. baselines: <br> - Cash spent <br> - Fill price <br> - Savings in basis points]
+    J --> K[Generate output: <br> - Print JSON summary <br> - Save cumulative cost chart as PNG]
+    K --> L[Done]
 
 ## Improvement idea
 
